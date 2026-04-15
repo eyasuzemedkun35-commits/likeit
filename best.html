@@ -1,0 +1,286 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Love Letter</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  height:100vh;
+  width: 100vw;
+  overflow:hidden;
+  font-family:'Cormorant Garamond', serif;
+  background: linear-gradient(-45deg, #ffe7dd, #fff0ea, #f9d8ce, #fce3db);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color:#4a2123;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  transition: opacity 0.8s ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.screen.active { opacity: 1; pointer-events: auto; z-index: 10; }
+
+#openingText {
+  font-family:'Playfair Display', serif;
+  font-size:24px;
+  font-style: italic;
+}
+
+#tap {
+  margin-top:30px;
+  font-size:14px;
+  letter-spacing:4px;
+  cursor:pointer;
+  opacity:0.6;
+  text-transform: uppercase;
+}
+
+/* ENVELOPE */
+.envelope-wrapper {
+  position: relative;
+  width: 280px; height: 190px;
+  cursor: pointer;
+}
+
+.envelope {
+  position: relative;
+  width: 100%; height: 100%;
+  background: #e6c8bd;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.envelope::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 0; height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-top: 105px solid #dfb5a7;
+  z-index: 3;
+  border-radius: 8px 8px 0 0;
+  transform-origin: top;
+  transition: transform 0.6s ease;
+}
+
+.envelope::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; width: 0; height: 0;
+  border-left: 140px solid #f2ddd5;
+  border-right: 140px solid #f2ddd5;
+  border-bottom: 100px solid #eed2c8;
+  z-index: 2;
+  border-radius: 0 0 8px 8px;
+}
+
+.envelope-wrapper.open .envelope::before { transform: rotateX(180deg); z-index: 1; }
+
+.seal {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45px; height: 45px;
+  background: #c23b3b;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  display: flex; align-items: center; justify-content: center;
+  color: #ffcccc;
+}
+
+.envelope-wrapper.open .seal { opacity: 0; }
+
+/* 💌 UPDATED LETTER CONTAINER */
+.letter-container {
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh; /* Prevents it from going off-screen */
+  background-color: #fffcfaf0;
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 40px 30px;
+  overflow-y: auto; /* ENABLE SCROLLING */
+  box-shadow: 0 25px 60px rgba(74, 33, 35, 0.15);
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  position: relative;
+  flex-shrink: 0; /* Prevent the box from squishing */
+
+  /* 🌸 IMAGE FIXED TO START AT TOP */
+  background-image: url('blossom.png');
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% auto;
+  background-attachment: scroll; 
+}
+
+/* Light overlay to keep text readable */
+.letter-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255, 252, 250, 0.7);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.letter-content-wrapper { position: relative; z-index: 2; }
+
+.letter-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: #9c4b4b;
+  margin-bottom: 25px;
+  font-style: italic;
+}
+
+.letter-title span {
+  display: block;
+  font-size: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  color: #4a2123;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.letter-container p {
+  font-size: 19px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+/* Scrollbar styling */
+.letter-container::-webkit-scrollbar { width: 5px; }
+.letter-container::-webkit-scrollbar-thumb { background: #d9b8af; border-radius: 10px; }
+
+.heart {
+  position: fixed;
+  bottom: -50px;
+  pointer-events: none;
+  z-index: 100;
+  animation: floatUp 4s ease-in forwards;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="screen active" id="opening">
+  <div id="openingText">💌 adoniyee yeheyaw lene leyet yelal eshi ☺️</div>
+  <div id="tap">Tap to open</div>
+</div>
+
+<div class="screen" id="envelopeScreen">
+  <div class="envelope-wrapper" id="envelopeBtn">
+    <div class="envelope"></div>
+    <div class="seal">❤</div>
+  </div>
+</div>
+
+<div class="screen" id="letterScreen">
+  <div class="letter-container">
+    <div class="letter-content-wrapper">
+      <h1 class="letter-title">Day 6 <span>My fav memories</span></h1>
+      <div id="letterBox"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="bgMusic" loop preload="auto">
+  <source src="your-song.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const fullLetterText = `My favorite memory with you isn’t just one moment.
+
+It’s the everyday moments I get to share with you.
+
+But if I had to choose, it would be the way you laugh — the kind that doesn’t stop, the kind that makes everything feel lighter.
+
+I remember how I shared even the smallest details with you, and somehow… you still enjoyed them. Like they mattered. Like I mattered.
+
+I remember how you respected me, even in the simplest things I said.
+
+And at the same time, I remember myself… thinking too much. Wondering: "does she like me?" "am I the right person for her?" "did I do everything right?" "what if she doesn’t like this?"
+
+That constant care I had for you… from every angle. That quiet pressure of wanting you to have the best, of wanting to be enough for you.
+
+And somehow… those thoughts, that stress, that care — they became my most valuable memories.
+
+Not because there aren’t better ones… but because they came from loving you. From wanting to care for you. From choosing you, in every small moment.
+
+And I haven’t forgotten… the times you sent me pictures and videos. How something so simple could change everything inside me.
+
+Like warmth spreading through me — like summer in my heart, even when everything outside felt like rain.`;
+
+const openingScreen = document.getElementById("opening");
+const envelopeScreen = document.getElementById("envelopeScreen");
+const letterScreen = document.getElementById("letterScreen");
+const envelopeBtn = document.getElementById("envelopeBtn");
+const letterBox = document.getElementById("letterBox");
+const bgMusic = document.getElementById("bgMusic");
+
+document.getElementById("opening").onclick = () => {
+  openingScreen.classList.remove("active");
+  setTimeout(() => envelopeScreen.classList.add("active"), 500);
+};
+
+envelopeBtn.onclick = () => {
+  envelopeBtn.classList.add("open");
+  bgMusic.loop = true;
+  bgMusic.play().catch(e => console.log("Audio blocked", e));
+  
+  setTimeout(() => {
+    envelopeScreen.classList.remove("active");
+    setTimeout(() => {
+      letterScreen.classList.add("active");
+      letterBox.innerHTML = fullLetterText.split("\n\n").map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+      startHearts();
+    }, 500);
+  }, 1000);
+};
+
+function startHearts() {
+  setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = "❤️";
+    h.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 4000);
+  }, 500);
+}
+</script>
+</body>
+</html>
