@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Love Letter</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -14,123 +14,238 @@ body {
   height:100vh;
   overflow:hidden;
   font-family:'Cormorant Garamond', serif;
-  background: radial-gradient(circle at top, #ffe7dd, #fff5f0 60%, #f7e6df);
-  color:#4a2f25;
+  /* Animated dreamy gradient */
+  background: linear-gradient(-45deg, #ffe7dd, #fff0ea, #f9d8ce, #fce3db);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color:#4a2123; /* Deeper, warmer romantic text color */
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* SCREEN CONTAINERS */
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  transition: opacity 1s ease, transform 1s ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.screen.fade-out {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
 }
 
 /* OPENING */
-.center {
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  text-align:center;
-}
-
 #openingText {
   font-family:'Playfair Display', serif;
-  font-size:22px;
+  font-size:24px;
+  font-style: italic;
+  padding: 0 20px;
+  animation: breathe 3s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.03); opacity: 1; }
 }
 
 #tap {
-  margin-top:25px;
-  font-size:13px;
-  letter-spacing:2px;
+  margin-top:35px;
+  font-size:14px;
+  letter-spacing:4px;
   cursor:pointer;
-  opacity:0.7;
+  opacity:0.6;
+  text-transform: uppercase;
+  transition: opacity 0.3s;
 }
 
 #tap:hover { opacity:1; }
 
-/* ENVELOPE */
-#envelope {
-  display:none;
+/* REALISTIC ENVELOPE */
+.envelope-wrapper {
+  position: relative;
+  width: 280px;
+  height: 190px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card {
-  width:260px;
-  height:180px;
-  background:linear-gradient(145deg,#f5e6dd,#ecd3c3);
-  border-radius:12px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.15);
-  cursor:pointer;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:40px;
+.envelope-wrapper:hover {
+  transform: translateY(-10px) scale(1.02);
+}
+
+.envelope {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #e6c8bd; /* Envelope back */
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.envelope::before {
+  /* Envelope Flap */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-top: 105px solid #dfb5a7; /* Darker flap */
+  z-index: 3;
+  border-radius: 8px 8px 0 0;
+  transform-origin: top;
+  transition: transform 0.6s ease;
+}
+
+.envelope::after {
+  /* Envelope Front (bottom triangle) */
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 140px solid #f2ddd5;
+  border-right: 140px solid #f2ddd5;
+  border-bottom: 100px solid #eed2c8;
+  z-index: 2;
+  border-radius: 0 0 8px 8px;
+}
+
+.envelope-wrapper.open .envelope::before {
+  transform: rotateX(180deg);
+  z-index: 1;
+}
+
+/* Little wax seal */
+.seal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45px;
+  height: 45px;
+  background: #c23b3b;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2), inset 0 0 5px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #ffcccc;
+  transition: opacity 0.3s;
+}
+
+.envelope-wrapper.open .seal {
+  opacity: 0;
+}
+
+.click-hint {
+  margin-top: 40px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  opacity: 0.7;
 }
 
 /* LETTER SCREEN */
 #letterScreen {
-  display:none;
-  height:100vh;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
+  padding: 20px;
 }
 
-/* 💌 FIXED LETTER BOX */
-.letter {
-  width:95%;
-  max-width:650px;
-  height:85vh;
-  background:rgba(255,250,245,0.96);
-  backdrop-filter:blur(10px);
-  border-radius:14px;
-  padding:40px;
-  overflow-y:auto;
-
-  box-shadow:0 25px 80px rgba(0,0,0,0.15);
-
-  font-size:18px;
-  line-height:1.9;
+.letter-container {
+  width: 95%;
+  max-width: 600px;
+  height: 85vh;
+  background: #fffcfaf0; /* Slightly transparent warm white */
+  backdrop-filter: blur(12px);
+  border-radius: 8px;
+  padding: 50px 40px;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(74, 33, 35, 0.15), inset 0 0 20px rgba(230, 200, 189, 0.3);
+  text-align: center; /* Centers the poetic format nicely */
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-/* paragraph spacing */
-.letter p {
-  margin-bottom:18px;
+.letter-container p {
+  font-size: 20px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  color: #4a2123;
 }
 
-/* scrollbar */
-.letter::-webkit-scrollbar {
-  width:5px;
+/* Custom Scrollbar */
+.letter-container::-webkit-scrollbar {
+  width: 6px;
 }
-.letter::-webkit-scrollbar-thumb {
-  background:#c9a08f;
-  border-radius:10px;
+.letter-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.letter-container::-webkit-scrollbar-thumb {
+  background: #d9b8af;
+  border-radius: 10px;
 }
 
-/* HEARTS */
+/* FLOATING HEARTS (Enhanced) */
 .heart {
-  position:fixed;
-  font-size:18px;
-  animation:float 3s ease forwards;
+  position: fixed;
+  bottom: -50px;
+  pointer-events: none;
+  z-index: 100;
+  animation: floatUp 4s ease-in forwards;
+  opacity: 0;
 }
 
-@keyframes float {
-  0% { transform:translateY(0); opacity:1; }
-  100% { transform:translateY(-200px); opacity:0; }
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(-120vh) scale(1.2) rotate(45deg); opacity: 0; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- OPENING -->
-<div class="center" id="opening">
+<div class="screen active" id="opening">
   <div id="openingText">💌 adoniyee yeheyaw lene leyet yelal eshi ☺️</div>
-  <div id="tap">tap to continue</div>
+  <div id="tap">Tap to open</div>
 </div>
 
-<!-- ENVELOPE -->
-<div class="center" id="envelope">
-  <div class="card" id="openBtn">💌</div>
+<div class="screen" id="envelopeScreen">
+  <div class="envelope-wrapper" id="envelopeBtn">
+    <div class="envelope"></div>
+    <div class="seal">❤</div>
+  </div>
+  <div class="click-hint">tap the envelope</div>
 </div>
 
-<!-- LETTER -->
-<div id="letterScreen" class="center">
-  <div class="letter" id="letterBox"></div>
+<div class="screen" id="letterScreen">
+  <div class="letter-container" id="letterBox"></div>
 </div>
 
 <script>
@@ -197,41 +312,86 @@ Like warmth spreading through me —
 like summer in my heart,
 even when everything outside felt like rain.`;
 
-/* NAVIGATION */
-document.getElementById("tap").onclick = () => {
-  document.getElementById("opening").style.display = "none";
-  document.getElementById("envelope").style.display = "flex";
+/* DOM ELEMENTS */
+const openingScreen = document.getElementById("opening");
+const envelopeScreen = document.getElementById("envelopeScreen");
+const letterScreen = document.getElementById("letterScreen");
+const envelopeBtn = document.getElementById("envelopeBtn");
+const letterBox = document.getElementById("letterBox");
+
+/* NAVIGATION WITH SMOOTH TRANSITIONS */
+document.getElementById("opening").onclick = () => {
+  openingScreen.classList.remove("active");
+  openingScreen.classList.add("fade-out");
+  
+  setTimeout(() => {
+    envelopeScreen.classList.add("active");
+  }, 600); // Wait for fade out
 };
 
-document.getElementById("openBtn").onclick = () => {
-  document.getElementById("envelope").style.display = "none";
-  document.getElementById("letterScreen").style.display = "flex";
-
-  document.getElementById("letterBox").innerHTML = formatLetter(letter);
-
-  spawnHearts();
+envelopeBtn.onclick = () => {
+  // 1. Play envelope open animation
+  envelopeBtn.classList.add("open");
+  
+  // 2. Wait a second, then fade out envelope screen and fade in letter
+  setTimeout(() => {
+    envelopeScreen.classList.remove("active");
+    envelopeScreen.classList.add("fade-out");
+    
+    setTimeout(() => {
+      letterScreen.classList.add("active");
+      letterBox.innerHTML = formatLetter(letter);
+      startHeartGenerator();
+    }, 600);
+  }, 800);
 };
 
-/* FORMAT LETTER (FIX LADDER TEXT) */
+/* FORMAT LETTER (Preserves correct line breaks for poetry) */
 function formatLetter(text) {
+  // Split by double line breaks for paragraphs, 
+  // replace single line breaks with <br> to keep poetic pacing.
   return text
     .split("\n\n")
-    .map(p => `<p>${p.replace(/\n/g, " ")}</p>`)
+    .map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`)
     .join("");
 }
 
-/* HEART EFFECT */
-function spawnHearts(){
-  for(let i=0;i<18;i++){
-    const h=document.createElement("div");
-    h.className="heart";
-    h.innerText="❤️";
-    h.style.left=Math.random()*window.innerWidth+"px";
-    h.style.top=window.innerHeight+"px";
-    document.body.appendChild(h);
+/* ENHANCED SWAYING HEART EFFECT */
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  
+  // Randomize heart content (different emojis/colors)
+  const hearts = ["❤️", "💖", "✨", "💕", "🤍"];
+  heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+  
+  // Randomize position and size
+  heart.style.left = Math.random() * 100 + "vw";
+  const size = Math.random() * 1.5 + 0.8; // 0.8x to 2.3x size
+  heart.style.fontSize = `${20 * size}px`;
+  
+  // Randomize animation duration slightly
+  const duration = Math.random() * 3 + 4; // 4s to 7s
+  heart.style.animationDuration = `${duration}s`;
 
-    setTimeout(()=>h.remove(),3000);
+  document.body.appendChild(heart);
+
+  // Remove element after animation finishes
+  setTimeout(() => heart.remove(), duration * 1000);
+}
+
+function startHeartGenerator() {
+  // Spawn an initial burst of hearts
+  for(let i=0; i<15; i++) {
+    setTimeout(createHeart, Math.random() * 1000);
   }
+  
+  // Continue spawning hearts periodically while reading
+  setInterval(() => {
+    if(Math.random() > 0.4) { // 60% chance to spawn a heart every 800ms
+      createHeart();
+    }
+  }, 800);
 }
 </script>
 
