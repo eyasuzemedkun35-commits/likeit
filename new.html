@@ -1,463 +1,239 @@
-<!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Day 5 — Your Strength</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Dancing+Script:wght@400;600&amp;display=swap" rel="stylesheet">
-  <style>
-html, body { height: 100%; margin: 0; overflow: hidden; }
-* { box-sizing: border-box; }
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Love Letter</title>
 
-.scene-canvas {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  height:100vh;
+  overflow:hidden;
+  font-family:'Cormorant Garamond', serif;
+  background: radial-gradient(circle at top, #ffe7dd, #fff5f0 60%, #f7e6df);
+  color:#4a2f25;
 }
 
-/* Stick figure styles */
-.stick-figure {
-  position: absolute;
-  bottom: 38%;
-  transition: opacity 1.5s ease;
+/* OPENING */
+.center {
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  text-align:center;
 }
 
-.stick-head {
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  border: 2.5px solid;
-  margin: 0 auto 2px;
+#openingText {
+  font-family:'Playfair Display', serif;
+  font-size:22px;
 }
 
-.stick-body { width: 2.5px; height: 28px; margin: 0 auto; }
-.stick-arms { position: relative; height: 20px; width: 30px; margin: -18px auto 0; }
-.stick-arm-l, .stick-arm-r {
-  position: absolute; top: 0;
-  width: 2.5px; height: 16px;
-  transform-origin: top center;
-}
-.stick-arm-l { left: 4px; transform: rotate(30deg); }
-.stick-arm-r { right: 4px; transform: rotate(-30deg); }
-.stick-legs { position: relative; height: 24px; width: 20px; margin: 0 auto; }
-.stick-leg-l, .stick-leg-r {
-  position: absolute; top: 0;
-  width: 2.5px; height: 22px;
-  transform-origin: top center;
-}
-.stick-leg-l { left: 3px; }
-.stick-leg-r { right: 3px; }
-
-/* Heart glow */
-.heart-container {
-  position: absolute;
-  top: -8px; left: 50%;
-  transform: translateX(-50%);
-  width: 20px; height: 20px;
+#tap {
+  margin-top:25px;
+  font-size:13px;
+  letter-spacing:2px;
+  cursor:pointer;
+  opacity:0.7;
 }
 
-.glass-heart {
-  width: 20px; height: 20px;
-  position: relative;
+#tap:hover { opacity:1; }
+
+/* ENVELOPE */
+#envelope {
+  display:none;
 }
 
-.heart-shape {
-  font-size: 20px;
-  filter: drop-shadow(0 0 6px rgba(255,150,150,0.8));
-  color: rgba(255,130,140,0.7);
-  transition: filter 2s ease, color 2s ease;
-  line-height: 1;
+.card {
+  width:260px;
+  height:180px;
+  background:linear-gradient(145deg,#f5e6dd,#ecd3c3);
+  border-radius:12px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.15);
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:40px;
 }
 
-.heart-crack {
-  position: absolute;
-  top: 5px; left: 8px;
-  width: 1.5px; height: 10px;
-  background: rgba(255,255,255,0.6);
-  transform: rotate(15deg);
-  box-shadow: 0 0 3px rgba(255,255,255,0.4);
-}
-.heart-crack2 {
-  position: absolute;
-  top: 7px; left: 11px;
-  width: 1px; height: 7px;
-  background: rgba(255,255,255,0.4);
-  transform: rotate(-20deg);
+/* LETTER SCREEN */
+#letterScreen {
+  display:none;
+  height:100vh;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
 }
 
-/* Particles */
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
+/* 💌 FIXED LETTER BOX */
+.letter {
+  width:95%;
+  max-width:650px;
+  height:85vh;
+  background:rgba(255,250,245,0.96);
+  backdrop-filter:blur(10px);
+  border-radius:14px;
+  padding:40px;
+  overflow-y:auto;
+
+  box-shadow:0 25px 80px rgba(0,0,0,0.15);
+
+  font-size:18px;
+  line-height:1.9;
 }
 
-/* Petal */
-.petal {
-  position: absolute;
-  width: 8px; height: 12px;
-  border-radius: 50% 50% 50% 0;
-  opacity: 0;
-  pointer-events: none;
+/* paragraph spacing */
+.letter p {
+  margin-bottom:18px;
 }
 
-/* Letter */
-.letter-container {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0;
-  transition: opacity 2s ease;
-  overflow-y: auto;
-  padding: 40px 20px;
+/* scrollbar */
+.letter::-webkit-scrollbar {
+  width:5px;
+}
+.letter::-webkit-scrollbar-thumb {
+  background:#c9a08f;
+  border-radius:10px;
 }
 
-.letter-scroll {
-  max-width: 580px;
-  width: 100%;
-  padding: 40px 30px 60px;
+/* HEARTS */
+.heart {
+  position:fixed;
+  font-size:18px;
+  animation:float 3s ease forwards;
 }
 
-.letter-title {
-  font-family: 'Dancing Script', cursive;
-  font-size: 32px;
-  margin-bottom: 28px;
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 1.5s ease 0.5s, transform 1.5s ease 0.5s;
+@keyframes float {
+  0% { transform:translateY(0); opacity:1; }
+  100% { transform:translateY(-200px); opacity:0; }
 }
-
-.letter-body {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 17px;
-  line-height: 2;
-  font-weight: 300;
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 2s ease 1.2s, transform 2s ease 1.2s;
-  white-space: pre-line;
-}
-
-.letter-body em {
-  font-style: italic;
-  font-weight: 400;
-}
-
-.letter-body strong {
-  font-weight: 600;
-}
-
-/* Glow overlay */
-.glow-overlay {
-  position: absolute; inset: 0;
-  background: radial-gradient(circle, rgba(255,200,180,0.9) 0%, rgba(255,220,210,0.95) 40%, rgba(255,240,235,1) 100%);
-  opacity: 0;
-  transition: opacity 2s ease;
-  pointer-events: none;
-}
-
-/* Walking animation */
-@keyframes walkCycle {
-  0%, 100% { transform: rotate(15deg); }
-  50% { transform: rotate(-15deg); }
-}
-
-@keyframes walkCycleR {
-  0%, 100% { transform: rotate(-15deg); }
-  50% { transform: rotate(15deg); }
-}
-
-.walking .stick-leg-l { animation: walkCycle 0.6s ease-in-out infinite; }
-.walking .stick-leg-r { animation: walkCycleR 0.6s ease-in-out infinite; }
-
-/* Holding arms */
-.holding .stick-arm-l { transform: rotate(50deg); }
-.holding .stick-arm-r { transform: rotate(-50deg); }
-
-@keyframes floatPetal {
-  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-  15% { opacity: 0.7; }
-  85% { opacity: 0.5; }
-  100% { transform: translateY(100%) rotate(180deg); opacity: 0; }
-}
-
-@keyframes particleFall {
-  0% { opacity: 0.8; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(40px); }
-}
-
-.replay-btn {
-  position: absolute;
-  bottom: 20px; right: 20px;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px;
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(180,120,120,0.3);
-  background: rgba(255,255,255,0.5);
-  color: #9a6b6b;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 1s ease, background 0.3s ease;
-  backdrop-filter: blur(4px);
-  z-index: 100;
-}
-.replay-btn:hover { background: rgba(255,255,255,0.8); }
 </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full" style="background: linear-gradient(135deg, #fdf2f0 0%, #fce8e4 30%, #f8e0db 60%, #f5ddd6 100%);">
-  <div id="app" class="scene-canvas"><!-- Background gradient shifts -->
-   <div id="bgShift" style="position:absolute;inset:0;opacity:0;transition:opacity 3s ease;background:linear-gradient(135deg,#fff5f0,#ffe8e0,#ffd6cc);"></div><!-- Particles container -->
-   <div id="particles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div><!-- Petals container -->
-   <div id="petals" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div><!-- Girl figure -->
-   <div id="girl" class="stick-figure holding walking" style="right:10%;opacity:0;">
-    <div class="stick-head" style="border-color:#8b6b6b;"></div>
-    <div class="stick-body" style="background:#8b6b6b;"></div>
-    <div class="stick-arms">
-     <div class="stick-arm-l" style="background:#8b6b6b;"></div>
-     <div class="stick-arm-r" style="background:#8b6b6b;"></div>
-     <div class="heart-container">
-      <div class="glass-heart">
-       <div class="heart-shape">
-        ♥
-       </div>
-       <div class="heart-crack"></div>
-       <div class="heart-crack2"></div>
-      </div>
-     </div>
-    </div>
-    <div class="stick-legs">
-     <div class="stick-leg-l" style="background:#8b6b6b;"></div>
-     <div class="stick-leg-r" style="background:#8b6b6b;"></div>
-    </div>
-   </div><!-- Boy figure -->
-   <div id="boy" class="stick-figure walking" style="right:0%;opacity:0;">
-    <div class="stick-head" style="border-color:#6b7b8b;"></div>
-    <div class="stick-body" style="background:#6b7b8b;"></div>
-    <div class="stick-arms">
-     <div class="stick-arm-l" style="background:#6b7b8b;"></div>
-     <div class="stick-arm-r" style="background:#6b7b8b;"></div>
-    </div>
-    <div class="stick-legs">
-     <div class="stick-leg-l" style="background:#6b7b8b;"></div>
-     <div class="stick-leg-r" style="background:#6b7b8b;"></div>
-    </div>
-   </div><!-- Glow overlay for transformation -->
-   <div id="glowOverlay" class="glow-overlay"></div><!-- Letter -->
-   <div id="letterContainer" class="letter-container">
-    <div class="letter-scroll">
-     <div id="letterTitle" class="letter-title" style="color:#9a6060;">
-      Day 5 — Your Strength
-     </div>
-     <div id="letterBody" class="letter-body" style="color:#6b5050;">
-      There's something I understand now… something I didn't fully see before. <strong>You're strong.</strong> Not in the loud way people talk about— but in the quiet way… <em>the real way.</em> The kind of strength it takes to carry something you haven't fully let go of. I see it. The way part of you still feels something… even after everything. The way you never got the closure you deserved. The way some emotions don't just disappear just because time has passed. And still… you keep going. <em>That's not weakness. That's strength.</em> I won't lie… At first, it confused me. Maybe even disturbed me. Not because of what you feel— but because I didn't know where I stood. But now I understand something. I don't love you just because you're with me. I love you because… <strong>you're the person I want to spend my life with.</strong> Not a perfect version of you. Not a version without a past. But <em>you</em>… exactly as you are. And I think… <em>that's what makes this real.</em>
-     </div>
-    </div>
-   </div><!-- Replay --> <button id="replayBtn" class="replay-btn" aria-label="Replay animation">↻ Replay</button>
-  </div>
-  <script>
-const defaultConfig = {
-  letter_title: 'Day 5 — Your Strength',
-  background_color: '#fdf2f0',
-  text_color: '#6b5050',
-  accent_color: '#9a6060',
-  heart_color: '#ff828c',
-  surface_color: '#fff5f0',
-  font_family: 'Cormorant Garamond',
-  font_size: 17
+</head>
+
+<body>
+
+<!-- OPENING -->
+<div class="center" id="opening">
+  <div id="openingText">💌 adoniyee yeheyaw lene leyet yelal eshi ☺️</div>
+  <div id="tap">tap to continue</div>
+</div>
+
+<!-- ENVELOPE -->
+<div class="center" id="envelope">
+  <div class="card" id="openBtn">💌</div>
+</div>
+
+<!-- LETTER -->
+<div id="letterScreen" class="center">
+  <div class="letter" id="letterBox"></div>
+</div>
+
+<script>
+const letter = `My favorite memory with you isn’t just one moment.
+
+It’s the everyday moments I get to share with you.
+
+But if I had to choose, it would be the way you laugh —
+the kind that doesn’t stop,
+the kind that makes everything feel lighter.
+
+I remember how I shared even the smallest details with you,
+and somehow…
+you still enjoyed them.
+
+Like they mattered.
+Like I mattered.
+
+I remember how you respected me,
+even in the simplest things I said.
+
+And at the same time,
+I remember myself…
+
+thinking too much.
+
+Wondering:
+"does she like me?"
+"am I the right person for her?"
+"did I do everything right?"
+"what if she doesn’t like this?"
+
+That constant care I had for you…
+from every angle.
+
+That quiet pressure of wanting you to have the best,
+of wanting to be enough for you.
+
+And somehow…
+
+those thoughts,
+that stress,
+that care —
+
+they became my most valuable memories.
+
+Not because there aren’t better ones…
+
+but because they came from loving you.
+
+From wanting to care for you.
+
+From choosing you,
+in every small moment.
+
+And I haven’t forgotten…
+
+the times you sent me pictures and videos.
+
+How something so simple
+could change everything inside me.
+
+Like warmth spreading through me —
+like summer in my heart,
+even when everything outside felt like rain.`;
+
+/* NAVIGATION */
+document.getElementById("tap").onclick = () => {
+  document.getElementById("opening").style.display = "none";
+  document.getElementById("envelope").style.display = "flex";
 };
 
-let animationTimer = null;
-let particleInterval = null;
-let petalInterval = null;
+document.getElementById("openBtn").onclick = () => {
+  document.getElementById("envelope").style.display = "none";
+  document.getElementById("letterScreen").style.display = "flex";
 
-function applyConfig(config) {
-  const c = { ...defaultConfig, ...config };
-  const font = c.font_family || defaultConfig.font_family;
-  const baseFont = 'Georgia, serif';
+  document.getElementById("letterBox").innerHTML = formatLetter(letter);
 
-  document.getElementById('letterTitle').textContent = c.letter_title || defaultConfig.letter_title;
-  document.getElementById('letterTitle').style.color = c.accent_color;
-  document.getElementById('letterBody').style.color = c.text_color;
-  document.getElementById('letterBody').style.fontFamily = `${font}, ${baseFont}`;
-  document.getElementById('letterBody').style.fontSize = `${c.font_size}px`;
-  document.getElementById('letterTitle').style.fontFamily = `Dancing Script, ${font}, cursive`;
-  document.getElementById('letterTitle').style.fontSize = `${c.font_size * 1.9}px`;
+  spawnHearts();
+};
 
-  document.body.style.background = `linear-gradient(135deg, ${c.background_color} 0%, ${c.surface_color} 100%)`;
+/* FORMAT LETTER (FIX LADDER TEXT) */
+function formatLetter(text) {
+  return text
+    .split("\n\n")
+    .map(p => `<p>${p.replace(/\n/g, " ")}</p>`)
+    .join("");
 }
 
-// Animation engine
-function runAnimation() {
-  // Reset
-  clearTimeout(animationTimer);
-  clearInterval(particleInterval);
-  clearInterval(petalInterval);
-  const girl = document.getElementById('girl');
-  const boy = document.getElementById('boy');
-  const heartShape = document.querySelector('.heart-shape');
-  const glowOverlay = document.getElementById('glowOverlay');
-  const letterContainer = document.getElementById('letterContainer');
-  const letterTitle = document.getElementById('letterTitle');
-  const letterBody = document.getElementById('letterBody');
-  const replayBtn = document.getElementById('replayBtn');
-  const particlesEl = document.getElementById('particles');
-  const petalsEl = document.getElementById('petals');
+/* HEART EFFECT */
+function spawnHearts(){
+  for(let i=0;i<18;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText="❤️";
+    h.style.left=Math.random()*window.innerWidth+"px";
+    h.style.top=window.innerHeight+"px";
+    document.body.appendChild(h);
 
-  particlesEl.innerHTML = '';
-  petalsEl.innerHTML = '';
-  girl.style.opacity = '0';
-  girl.style.right = '10%';
-  girl.classList.add('walking');
-  boy.style.opacity = '0';
-  boy.style.right = '0%';
-  boy.classList.add('walking');
-  heartShape.style.filter = 'drop-shadow(0 0 6px rgba(255,150,150,0.8))';
-  heartShape.style.color = 'rgba(255,130,140,0.7)';
-  glowOverlay.style.opacity = '0';
-  letterContainer.style.opacity = '0';
-  letterTitle.style.opacity = '0';
-  letterTitle.style.transform = 'translateY(15px)';
-  letterBody.style.opacity = '0';
-  letterBody.style.transform = 'translateY(15px)';
-  replayBtn.style.opacity = '0';
-  document.getElementById('bgShift').style.opacity = '0';
-
-  const ms = (s) => s * 1000;
-
-  // Scene 1: Girl appears and walks (0-3s)
-  setTimeout(() => {
-    girl.style.opacity = '1';
-    girl.style.transition = 'right 12s linear, opacity 1.5s ease';
-    girl.style.right = '55%';
-  }, 200);
-
-  // Scene 2: Particles fall from heart (3-6s)
-  setTimeout(() => {
-    girl.style.transition = 'right 15s linear';
-    // Slow her down by not changing target much
-    particleInterval = setInterval(() => {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const girlRect = girl.getBoundingClientRect();
-      p.style.left = (girlRect.left + girlRect.width / 2 + (Math.random() - 0.5) * 10) + 'px';
-      p.style.top = (girlRect.top + 20) + 'px';
-      p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
-      p.style.background = `rgba(255,${150 + Math.random()*50},${150 + Math.random()*50},0.8)`;
-      p.style.boxShadow = '0 0 4px rgba(255,180,180,0.6)';
-      p.style.animation = `particleFall ${1 + Math.random()}s ease-out forwards`;
-      particlesEl.appendChild(p);
-      setTimeout(() => p.remove(), 2000);
-    }, 150);
-  }, ms(3));
-
-  // Scene 3: Boy appears (6-9s)
-  setTimeout(() => {
-    boy.style.opacity = '1';
-    boy.style.transition = 'right 9s linear, opacity 1.5s ease';
-    boy.style.right = '48%';
-  }, ms(6));
-
-  // Scene 4: Glance - heart brightens (9-12s)
-  setTimeout(() => {
-    heartShape.style.filter = 'drop-shadow(0 0 12px rgba(255,180,160,0.9))';
-    heartShape.style.color = 'rgba(255,150,155,0.85)';
-    girl.classList.remove('walking');
-    boy.classList.remove('walking');
-  }, ms(9));
-
-  // Scene 5: Stability (12-15s)
-  setTimeout(() => {
-    clearInterval(particleInterval);
-    heartShape.style.filter = 'drop-shadow(0 0 15px rgba(255,200,180,0.9))';
-    heartShape.style.color = 'rgba(255,170,165,0.9)';
-    document.getElementById('bgShift').style.opacity = '0.5';
-  }, ms(12));
-
-  // Scene 6: Transformation (15-18s)
-  setTimeout(() => {
-    glowOverlay.style.opacity = '1';
-    girl.style.opacity = '0';
-    boy.style.opacity = '0';
-
-    // Petals
-    petalInterval = setInterval(() => {
-      const pt = document.createElement('div');
-      pt.className = 'petal';
-      const colors = ['rgba(255,180,180,0.6)','rgba(255,200,190,0.5)','rgba(255,160,170,0.5)','rgba(255,220,210,0.4)'];
-      pt.style.background = colors[Math.floor(Math.random()*colors.length)];
-      pt.style.left = Math.random() * 100 + '%';
-      pt.style.top = '-20px';
-      pt.style.width = (6 + Math.random()*8) + 'px';
-      pt.style.height = (8 + Math.random()*10) + 'px';
-      pt.style.animation = `floatPetal ${4 + Math.random()*3}s ease-in-out forwards`;
-      petalsEl.appendChild(pt);
-      setTimeout(() => pt.remove(), 8000);
-    }, 200);
-  }, ms(15));
-
-  // Scene 7: Letter (18-25s)
-  setTimeout(() => {
-    glowOverlay.style.opacity = '0';
-    letterContainer.style.opacity = '1';
-    letterContainer.style.pointerEvents = 'auto';
-
-    setTimeout(() => {
-      letterTitle.style.opacity = '1';
-      letterTitle.style.transform = 'translateY(0)';
-    }, 500);
-    setTimeout(() => {
-      letterBody.style.opacity = '1';
-      letterBody.style.transform = 'translateY(0)';
-    }, 1200);
-    setTimeout(() => {
-      replayBtn.style.opacity = '1';
-    }, 3000);
-  }, ms(18));
+    setTimeout(()=>h.remove(),3000);
+  }
 }
-
-// Replay
-document.getElementById('replayBtn').addEventListener('click', (e) => {
-  e.preventDefault();
-  runAnimation();
-});
-
-// SDK init
-if (window.elementSdk) {
-  window.elementSdk.init({
-    defaultConfig,
-    onConfigChange: async (config) => {
-      applyConfig(config);
-    },
-    mapToCapabilities: (config) => ({
-      recolorables: [
-        { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-        { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-        { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-        { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
-        { get: () => config.heart_color || defaultConfig.heart_color, set: (v) => { config.heart_color = v; window.elementSdk.setConfig({ heart_color: v }); } }
-      ],
-      borderables: [],
-      fontEditable: {
-        get: () => config.font_family || defaultConfig.font_family,
-        set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
-      },
-      fontSizeable: {
-        get: () => config.font_size || defaultConfig.font_size,
-        set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
-      }
-    }),
-    mapToEditPanelValues: (config) => new Map([
-      ['letter_title', config.letter_title || defaultConfig.letter_title]
-    ])
-  });
-}
-
-applyConfig(defaultConfig);
-runAnimation();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ebcaaae05f87e19',t:'MTc3NjEwNjMzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+</body>
 </html>
